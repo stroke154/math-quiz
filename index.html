@@ -1,0 +1,1088 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Simple Math Quiz for Kids</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f0f8ff;
+      margin: 0;
+      padding: 20px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+    
+    .container {
+      background-color: white;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      padding: 20px;
+      max-width: 500px;
+      width: 100%;
+    }
+    
+    h1 {
+      color: #4169e1;
+      text-align: center;
+    }
+    
+    .screen {
+      display: none;
+    }
+    
+    .screen.active {
+      display: block;
+    }
+    
+    #problem {
+      font-size: 2rem;
+      text-align: center;
+      margin: 20px 0;
+      font-weight: bold;
+      color: #4169e1;
+    }
+    
+    .progress {
+      background-color: #e0e0e0;
+      border-radius: 10px;
+      height: 10px;
+      margin-bottom: 20px;
+    }
+    
+    .progress-bar {
+      background-color: #4169e1;
+      height: 10px;
+      border-radius: 10px;
+      width: 100%;
+      transition: width 1s linear;
+    }
+    
+    input[type="number"] {
+      display: block;
+      margin: 0 auto;
+      padding: 10px;
+      font-size: 1.5rem;
+      width: 100px;
+      text-align: center;
+      border: 2px solid #4169e1;
+      border-radius: 5px;
+    }
+    
+    input[type="text"] {
+      padding: 8px;
+      border: 2px solid #4169e1;
+      border-radius: 5px;
+      font-size: 1rem;
+    }
+    
+    button {
+      display: block;
+      margin: 20px auto;
+      padding: 10px 20px;
+      background-color: #4169e1;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      font-size: 1rem;
+      cursor: pointer;
+    }
+    
+    button:hover {
+      background-color: #3151b5;
+    }
+    
+    .result-item {
+      padding: 10px;
+      margin: 5px 0;
+      border-radius: 5px;
+    }
+    
+    .correct {
+      background-color: #e6ffe6;
+    }
+    
+    .incorrect {
+      background-color: #ffe6e6;
+    }
+    
+    .difficulty-option {
+      padding: 10px;
+      margin: 10px 0;
+      border: 2px solid #e0e0e0;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    
+    .difficulty-option:hover {
+      border-color: #4169e1;
+    }
+    
+    .difficulty-option.selected {
+      border-color: #4169e1;
+      background-color: #f0f8ff;
+    }
+    
+    .loading {
+      text-align: center;
+      font-size: 1.2rem;
+      color: #4169e1;
+    }
+    
+    #error-message {
+      color: red;
+      text-align: center;
+      margin-top: 10px;
+    }
+    
+    .feedback-correct {
+      color: green;
+      text-align: center;
+      font-weight: bold;
+      margin-top: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .feedback-incorrect {
+      color: red;
+      text-align: center;
+      font-weight: bold;
+      margin-top: 10px;
+    }
+    
+    .sidebar {
+      position: fixed;
+      left: 20px;
+      top: 50%;
+      transform: translateY(-50%);
+      background-color: #4169e1;
+      padding: 20px;
+      border-radius: 10px;
+      color: white;
+      width: 150px;
+      text-align: center;
+    }
+    
+    .operation-button {
+      display: inline-block;
+      margin: 5px;
+      padding: 8px 15px;
+      background-color: #e0e0e0;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    
+    .operation-button.selected {
+      background-color: #4169e1;
+      color: white;
+    }
+    
+    .history-section {
+      margin-top: 20px;
+      border-top: 1px solid #e0e0e0;
+      padding-top: 15px;
+    }
+    
+    .history-item {
+      margin-bottom: 10px;
+      padding: 10px;
+      border-radius: 5px;
+      border: 1px solid #e0e0e0;
+    }
+    
+    .date-display {
+      text-align: right;
+      color: #666;
+      font-size: 0.9rem;
+      margin-bottom: 10px;
+    }
+    
+    .tick-icon {
+      color: green;
+      font-size: 1.2rem;
+      margin-right: 5px;
+    }
+    
+    .achievement-badge {
+      display: inline-block;
+      margin: 5px;
+      padding: 5px 10px;
+      background-color: #fff3cd;
+      border: 1px solid #ffeeba;
+      border-radius: 20px;
+      font-size: 0.9rem;
+    }
+    
+    .achievement-icon {
+      margin-right: 5px;
+    }
+    
+    .profile-section {
+      margin-top: 15px;
+      padding: 10px;
+      background-color: #f8f9fa;
+      border-radius: 5px;
+    }
+    
+    .profile-header {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 10px;
+    }
+    
+    .challenge-mode-toggle {
+      display: flex;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+    
+    .challenge-mode-toggle input {
+      margin-right: 10px;
+    }
+    
+    @media (max-width: 992px) {
+      .sidebar {
+        position: static;
+        transform: none;
+        width: auto;
+        margin-bottom: 20px;
+      }
+      
+      body {
+        flex-direction: column;
+      }
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    
+    .fade-in {
+      animation: fadeIn 0.5s;
+    }
+    
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+      100% { transform: scale(1); }
+    }
+    
+    .pulse {
+      animation: pulse 0.5s;
+    }
+  </style>
+</head>
+<body>
+  <div class="sidebar">
+    <h2>Math Quiz for Kids</h2>
+    <p>Test your math skills with fun problems!</p>
+  </div>
+
+  <div class="container">
+    <!-- Loading Screen -->
+    <div id="loading-screen" class="screen active">
+      <div class="loading">Loading Math Quiz...</div>
+      <div id="error-message"></div>
+    </div>
+    
+    <!-- Start Screen -->
+    <div id="start-screen" class="screen">
+      <h1>Math Quiz for Kids</h1>
+      <p style="text-align: center;">Test your math skills with fun problems!</p>
+      
+      <div class="date-display" id="current-date">Today's Date: </div>
+      
+      <div style="margin-bottom: 20px;">
+        <label for="player-name" style="display: block; margin-bottom: 5px;">Your Name:</label>
+        <input type="text" id="player-name" placeholder="Enter your name" style="width: 100%; padding: 8px; border: 2px solid #4169e1; border-radius: 5px;">
+      </div>
+      
+      <div>
+        <h3>Select Difficulty:</h3>
+        <div id="difficulty-options">
+          <div class="difficulty-option selected" data-difficulty="easy">
+            <strong>Easy</strong>
+            <p>Numbers up to 10, only addition and subtraction</p>
+          </div>
+          
+          <div class="difficulty-option" data-difficulty="medium">
+            <strong>Medium</strong>
+            <p>Numbers up to 20, addition, subtraction, and multiplication</p>
+          </div>
+        </div>
+      </div>
+      
+      <div style="margin-top: 20px;">
+        <h3>Select Operations:</h3>
+        <div id="operation-options" style="text-align: center;">
+          <div class="operation-button selected" data-operation="addition">Addition (+)</div>
+          <div class="operation-button" data-operation="subtraction">Subtraction (-)</div>
+          <div class="operation-button" data-operation="multiplication">Multiplication (×)</div>
+          <div class="operation-button" data-operation="mixed">Mixed</div>
+        </div>
+      </div>
+      
+      <div class="challenge-mode-toggle">
+        <input type="checkbox" id="challenge-mode">
+        <label for="challenge-mode">Time Challenge Mode</label>
+      </div>
+      
+      <button id="start-button">Start Quiz</button>
+      
+      <div class="history-section" id="quiz-history">
+        <h3>Your Quiz History</h3>
+        <div id="history-list">
+          <!-- Quiz history will be displayed here -->
+          <div class="no-history" style="text-align: center; color: #666;">No quizzes completed yet</div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Quiz Screen -->
+    <div id="quiz-screen" class="screen">
+      <div style="display: flex; justify-content: space-between; align-items: center;">
+        <div id="player-display" style="font-weight: bold;">Player</div>
+        <div id="timer-display" style="font-weight: bold; display: none;">Time: <span id="time-display">60</span>s</div>
+      </div>
+      
+      <div class="progress">
+        <div id="progress-bar" class="progress-bar"></div>
+      </div>
+      
+      <div id="problem-counter">Problem 1 of 10</div>
+      <div id="problem">5 + 3 = ?</div>
+      
+      <input type="number" id="answer-input">
+      <button id="submit-button">Submit</button>
+      
+      <!-- Feedback message -->
+      <div id="feedback" style="text-align: center; margin-top: 10px; height: 24px; font-weight: bold;"></div>
+    </div>
+    
+    <!-- Results Screen -->
+    <div id="results-screen" class="screen">
+      <h1>Quiz Results</h1>
+      
+      <div class="date-display" id="result-date">Completed: </div>
+      
+      <div style="text-align: center; margin: 20px 0;">
+        <div id="player-result" style="font-size: 1.2rem; margin-bottom: 10px;">Good job, Player!</div>
+        <div id="score" style="font-size: 2rem; font-weight: bold;">0/10</div>
+        <div id="percentage">0%</div>
+        <div id="time-taken" style="margin-top: 5px; color: #4169e1; display: none;">Time: 0 seconds</div>
+        <div id="message">Keep practicing!</div>
+      </div>
+      
+      <div style="margin: 20px 0;">
+        <h3>Statistics:</h3>
+        <div style="display: flex; flex-wrap: wrap; gap: 10px; justify-content: space-between; margin-top: 10px;">
+          <div>
+            <strong>Addition:</strong> <span id="addition-stats">0/0</span>
+          </div>
+          <div>
+            <strong>Subtraction:</strong> <span id="subtraction-stats">0/0</span>
+          </div>
+          <div>
+            <strong>Multiplication:</strong> <span id="multiplication-stats">0/0</span>
+          </div>
+        </div>
+      </div>
+      
+      <div id="achievements" style="margin-top: 15px; display: none;">
+        <h3>Achievements:</h3>
+        <div id="achievement-badges">
+          <!-- Achievements will be displayed here -->
+        </div>
+      </div>
+      
+      <div id="results-list"></div>
+      
+      <div style="display: flex; justify-content: space-between; margin-top: 20px;">
+        <button id="menu-button">Main Menu</button>
+        <button id="retry-button">Try Again</button>
+      </div>
+    </div>
+  </div>
+  
+  <script>
+    // Wait for page to fully load before executing script
+    window.onload = function() {
+      try {
+        // Disable localStorage completely by creating dummy functions
+        const noopStorage = {
+          getItem: function() { return null; },
+          setItem: function() { return null; },
+          removeItem: function() { return null; }
+        };
+        
+        // Replace global localStorage with dummy version to prevent errors
+        try {
+          // Use Object.defineProperty to completely replace localStorage
+          Object.defineProperty(window, 'localStorage', {
+            get: function() { return noopStorage; }
+          });
+        } catch (e) {
+          console.log('Note: localStorage already disabled or unavailable');
+        }
+        
+        // Show loading screen for just a moment to ensure everything is ready
+        setTimeout(function() {
+          document.getElementById('loading-screen').classList.remove('active');
+          document.getElementById('start-screen').classList.add('active');
+          
+          // Set current date
+          updateDateDisplay();
+        }, 500);
+        const DIFFICULTY = {
+          easy: { maxNum: 10, operations: ['+', '-'], time: 60 },
+          medium: { maxNum: 20, operations: ['+', '-', '×'], time: 90 }
+        };
+        
+        // Game state
+        let state = {
+          playerName: '',
+          difficulty: 'easy',
+          operation: 'addition',
+          problems: [],
+          currentIndex: 0,
+          score: 0,
+          timeLeft: 0,
+          timer: null,
+          answers: {},
+          startTime: 0,
+          endTime: 0,
+          challengeMode: false,
+          operationStats: {
+            '+': { total: 0, correct: 0 },
+            '-': { total: 0, correct: 0 },
+            '×': { total: 0, correct: 0 }
+          },
+          attemptCount: {},  // Track number of attempts per question
+        };
+        
+        // User history - stored in memory with localStorage fallback
+        let userHistory = {
+          quizzes: []
+        };
+        
+        // Global history object for all players (in-memory fallback)
+        let globalQuizHistory = {
+          players: {}
+        };
+        
+        // Get DOM elements
+        const difficultyOptions = document.querySelectorAll('.difficulty-option');
+        const operationButtons = document.querySelectorAll('.operation-button');
+        const startButton = document.getElementById('start-button');
+        const submitButton = document.getElementById('submit-button');
+        const menuButton = document.getElementById('menu-button');
+        const retryButton = document.getElementById('retry-button');
+        const answerInput = document.getElementById('answer-input');
+        const timeDisplay = document.getElementById('time-display');
+        const timerDisplay = document.getElementById('timer-display');
+        const progressBar = document.getElementById('progress-bar');
+        const problemDisplay = document.getElementById('problem');
+        const problemCounter = document.getElementById('problem-counter');
+        const playerNameInput = document.getElementById('player-name');
+        const playerDisplay = document.getElementById('player-display');
+        const playerResult = document.getElementById('player-result');
+        const feedbackDisplay = document.getElementById('feedback');
+        const challengeModeToggle = document.getElementById('challenge-mode');
+        
+        // Load history from localStorage
+        loadUserHistory();
+        
+        // Date functions
+        function updateDateDisplay() {
+          const now = new Date();
+          const formattedDate = now.toLocaleDateString('en-US', { 
+            weekday: 'long', 
+            year: 'numeric', 
+            month: 'long', 
+            day: 'numeric' 
+          });
+          document.getElementById('current-date').textContent = 'Today\'s Date: ' + formattedDate;
+        }
+        
+        // Set up difficulty selection
+        difficultyOptions.forEach(option => {
+          option.addEventListener('click', function() {
+            // Remove selected class from all options
+            difficultyOptions.forEach(opt => {
+              opt.classList.remove('selected');
+            });
+            
+            // Add selected class to clicked option
+            this.classList.add('selected');
+            
+            // Update difficulty in game state
+            state.difficulty = this.getAttribute('data-difficulty');
+          });
+        });
+        
+        // Set up operation selection
+        operationButtons.forEach(button => {
+          button.addEventListener('click', function() {
+            // Remove selected class from all buttons
+            operationButtons.forEach(btn => {
+              btn.classList.remove('selected');
+            });
+            
+            // Add selected class to clicked button
+            this.classList.add('selected');
+            
+            // Update operation in game state
+            state.operation = this.getAttribute('data-operation');
+          });
+        });
+        
+        // Handle challenge mode toggle
+        challengeModeToggle.addEventListener('change', function() {
+          state.challengeMode = this.checked;
+        });
+        
+        // Helper function to get a random number
+        function getRandomNumber(min, max) {
+          return Math.floor(Math.random() * (max - min + 1)) + min;
+        }
+        
+        // Generate a problem based on difficulty and operation
+        function generateProblem(difficulty, operation) {
+          const config = DIFFICULTY[difficulty];
+          let chosenOperation;
+          
+          if (operation === 'mixed') {
+            // Select a random operation based on difficulty
+            const availableOps = difficulty === 'easy' ? ['+', '-'] : ['+', '-', '×'];
+            chosenOperation = availableOps[Math.floor(Math.random() * availableOps.length)];
+          } else {
+            // Map operation names to symbols
+            switch (operation) {
+              case 'addition': chosenOperation = '+'; break;
+              case 'subtraction': chosenOperation = '-'; break;
+              case 'multiplication': chosenOperation = '×'; break;
+              default: chosenOperation = '+';
+            }
+          }
+          
+          let num1, num2, answer;
+          
+          switch(chosenOperation) {
+            case '+':
+              num1 = getRandomNumber(1, config.maxNum);
+              num2 = getRandomNumber(1, config.maxNum);
+              answer = num1 + num2;
+              break;
+            case '-':
+              num1 = getRandomNumber(1, config.maxNum);
+              num2 = getRandomNumber(1, num1); // Ensure positive result
+              answer = num1 - num2;
+              break;
+            case '×':
+              num1 = getRandomNumber(1, Math.floor(config.maxNum / 5));
+              num2 = getRandomNumber(1, Math.floor(config.maxNum / 5));
+              answer = num1 * num2;
+              break;
+            default:
+              num1 = getRandomNumber(1, config.maxNum);
+              num2 = getRandomNumber(1, config.maxNum);
+              answer = num1 + num2;
+          }
+          
+          // Update operation stats
+          state.operationStats[chosenOperation].total++;
+          
+          return {
+            num1: num1,
+            num2: num2,
+            operation: chosenOperation,
+            answer: answer
+          };
+        }
+        
+        // Update timer display
+        function updateTimer() {
+          timeDisplay.textContent = state.timeLeft;
+          
+          // Update progress bar
+          const percentage = (state.timeLeft / DIFFICULTY[state.difficulty].time) * 100;
+          progressBar.style.width = percentage + '%';
+          
+          // Change color when time is running out
+          if (state.timeLeft <= 10) {
+            progressBar.style.backgroundColor = 'red';
+            timeDisplay.style.color = 'red';
+          } else {
+            progressBar.style.backgroundColor = '#4169e1';
+            timeDisplay.style.color = 'black';
+          }
+        }
+        
+        // Display the current problem
+        function displayProblem() {
+          const problem = state.problems[state.currentIndex];
+          problemCounter.textContent = `Problem ${state.currentIndex + 1} of ${state.problems.length}`;
+          problemDisplay.textContent = `${problem.num1} ${problem.operation} ${problem.num2} = ?`;
+          answerInput.value = '';
+          answerInput.focus();
+          
+          // Clear feedback
+          feedbackDisplay.textContent = '';
+          feedbackDisplay.className = '';
+          
+          // Update progress bar
+          const progress = ((state.currentIndex) / state.problems.length) * 100;
+          progressBar.style.width = progress + '%';
+        }
+        
+        // Start the quiz
+        function startQuiz() {
+          // Get player name (use default if empty)
+          state.playerName = playerNameInput.value.trim() || 'Player';
+          playerDisplay.textContent = state.playerName;
+          
+          // Hide start screen and show quiz screen
+          document.getElementById('start-screen').classList.remove('active');
+          document.getElementById('quiz-screen').classList.add('active');
+          
+          // Reset operation stats
+          state.operationStats = {
+            '+': { total: 0, correct: 0 },
+            '-': { total: 0, correct: 0 },
+            '×': { total: 0, correct: 0 }
+          };
+          
+          // Generate problems
+          state.problems = [];
+          for (let i = 0; i < 10; i++) {
+            state.problems.push(generateProblem(state.difficulty, state.operation));
+          }
+          
+          // Reset state
+          state.currentIndex = 0;
+          state.score = 0;
+          state.answers = {};
+          state.startTime = Date.now(); // Record start time
+          state.attemptCount = {}; // Reset attempt counter
+          
+          // Challenge mode
+          if (state.challengeMode) {
+            state.timeLeft = DIFFICULTY[state.difficulty].time;
+            timerDisplay.style.display = 'block';
+            updateTimer();
+            clearInterval(state.timer);
+            state.timer = setInterval(function() {
+              state.timeLeft--;
+              updateTimer();
+              
+              if (state.timeLeft <= 0) {
+                clearInterval(state.timer);
+                showResults();
+              }
+            }, 1000);
+          } else {
+            timerDisplay.style.display = 'none';
+            progressBar.style.backgroundColor = '#4169e1';
+          }
+          
+          // Display first problem
+          displayProblem();
+        }
+        
+        // Submit an answer
+        function submitAnswer() {
+          const userAnswer = parseInt(answerInput.value);
+          
+          if (isNaN(userAnswer)) {
+            return; // Don't submit if input is not a number
+          }
+          
+          const problem = state.problems[state.currentIndex];
+          const questionId = state.currentIndex;
+          
+          // Initialize attempt counter for this question if needed
+          if (!state.attemptCount[questionId]) {
+            state.attemptCount[questionId] = 0;
+          }
+          
+          state.attemptCount[questionId]++;
+          const attemptNumber = state.attemptCount[questionId];
+          
+          const isCorrect = userAnswer === problem.answer;
+          
+          // Record answer
+          if (!state.answers[questionId] || !state.answers[questionId].isCorrect) {
+            state.answers[questionId] = {
+              userAnswer: userAnswer,
+              isCorrect: isCorrect,
+              attempts: attemptNumber
+            };
+          }
+          
+          // Update score and statistics
+          if (isCorrect) {
+            // Only update score if this is the first time getting it correct
+            if (!state.answers[questionId] || state.answers[questionId].attempts === attemptNumber) {
+              state.score++;
+              state.operationStats[problem.operation].correct++;
+            }
+            
+            // Show correct feedback
+            feedbackDisplay.className = 'feedback-correct';
+            feedbackDisplay.innerHTML = '<span class="tick-icon">✓</span> Correct!';
+            
+            // Move to next problem after a short delay
+            setTimeout(function() {
+              if (state.currentIndex < state.problems.length - 1) {
+                state.currentIndex++;
+                displayProblem();
+              } else {
+                showResults();
+              }
+            }, 1000);
+          } else {
+            // Show incorrect feedback
+            feedbackDisplay.className = 'feedback-incorrect';
+            
+            if (attemptNumber === 1) {
+              feedbackDisplay.textContent = 'Try again!';
+              answerInput.value = ''; // Clear input for retry
+              answerInput.focus(); // Return focus to the answer input
+            } else {
+              // Second attempt - show answer and move on
+              feedbackDisplay.textContent = `Incorrect. The answer is ${problem.answer}.`;
+              
+              // Move to next problem after a short delay
+              setTimeout(function() {
+                if (state.currentIndex < state.problems.length - 1) {
+                  state.currentIndex++;
+                  displayProblem();
+                } else {
+                  showResults();
+                }
+              }, 1500);
+            }
+          }
+        }
+        
+        // Show results
+        function showResults() {
+          // Stop timer and record end time
+          clearInterval(state.timer);
+          state.endTime = Date.now();
+          const timeTaken = Math.round((state.endTime - state.startTime) / 1000);
+          
+          // Hide quiz screen and show results screen
+          document.getElementById('quiz-screen').classList.remove('active');
+          document.getElementById('results-screen').classList.add('active');
+          
+          // Set result date
+          const resultDate = new Date();
+          const formattedDate = resultDate.toLocaleDateString('en-US', { 
+            weekday: 'long', 
+            year: 'numeric', 
+            month: 'long', 
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+          });
+          document.getElementById('result-date').textContent = 'Completed: ' + formattedDate;
+          
+          // Update score display
+          const scoreElement = document.getElementById('score');
+          const percentageElement = document.getElementById('percentage');
+          const messageElement = document.getElementById('message');
+          const timeTakenElement = document.getElementById('time-taken');
+          
+          // Player name result
+          playerResult.textContent = `Good job, ${state.playerName}!`;
+          
+          // Score and percentage
+          scoreElement.textContent = `${state.score}/${state.problems.length}`;
+          
+          const percentage = (state.score / state.problems.length) * 100;
+          percentageElement.textContent = `${Math.round(percentage)}%`;
+          
+          // Time taken (only show in challenge mode)
+          if (state.challengeMode) {
+            timeTakenElement.style.display = 'block';
+            timeTakenElement.textContent = `Time: ${timeTaken} seconds`;
+          } else {
+            timeTakenElement.style.display = 'none';
+          }
+          
+          // Set message based on score
+          if (percentage >= 90) {
+            messageElement.textContent = 'Amazing! You are a math genius! 🏆';
+            scoreElement.style.color = '#28a745';
+            percentageElement.style.color = '#28a745';
+          } else if (percentage >= 70) {
+            messageElement.textContent = 'Great job! Very impressive! 🌟';
+            scoreElement.style.color = '#4169e1';
+            percentageElement.style.color = '#4169e1';
+          } else if (percentage >= 50) {
+            messageElement.textContent = 'Good effort! Keep practicing! 👍';
+            scoreElement.style.color = '#ffc107';
+            percentageElement.style.color = '#ffc107';
+          } else {
+            messageElement.textContent = 'Nice try! Let us practice more and try again! 💪';
+            scoreElement.style.color = '#dc3545';
+            percentageElement.style.color = '#dc3545';
+          }
+          
+          // Update operation statistics
+          document.getElementById('addition-stats').textContent = 
+            `${state.operationStats['+'].correct}/${state.operationStats['+'].total}`;
+          document.getElementById('subtraction-stats').textContent = 
+            `${state.operationStats['-'].correct}/${state.operationStats['-'].total}`;
+          document.getElementById('multiplication-stats').textContent = 
+            `${state.operationStats['×'].correct}/${state.operationStats['×'].total}`;
+          
+          // Show results list
+          const resultsList = document.getElementById('results-list');
+          resultsList.innerHTML = '<h3>Questions:</h3>';
+          
+          state.problems.forEach((problem, index) => {
+            const answer = state.answers[index] || {};
+            
+            const resultItem = document.createElement('div');
+            resultItem.className = `result-item ${answer.isCorrect ? 'correct' : 'incorrect'}`;
+            
+            resultItem.innerHTML = `
+              <div>${problem.num1} ${problem.operation} ${problem.num2} = ${problem.answer}</div>
+              ${answer.userAnswer !== undefined ? 
+                `<div>Your answer: ${answer.userAnswer} ${answer.isCorrect ? '✓' : '✗'}</div>` : 
+                '<div>No answer provided ✗</div>'}
+            `;
+            
+            resultsList.appendChild(resultItem);
+          });
+          
+          // Calculate achievements
+          const achievementBadges = calculateAchievements(percentage, timeTaken);
+          
+          // Display achievements if any
+          if (achievementBadges.length > 0) {
+            document.getElementById('achievements').style.display = 'block';
+            const badgesContainer = document.getElementById('achievement-badges');
+            badgesContainer.innerHTML = '';
+            
+            achievementBadges.forEach(badge => {
+              const badgeElement = document.createElement('div');
+              badgeElement.className = 'achievement-badge';
+              badgeElement.innerHTML = `<span class="achievement-icon">${badge.icon}</span> ${badge.name}`;
+              badgesContainer.appendChild(badgeElement);
+            });
+          } else {
+            document.getElementById('achievements').style.display = 'none';
+          }
+          
+          // Save quiz to history
+          saveQuizToHistory({
+            date: formattedDate,
+            playerName: state.playerName,
+            difficulty: state.difficulty,
+            operation: state.operation,
+            score: state.score,
+            total: state.problems.length,
+            percentage: Math.round(percentage),
+            timeTaken: timeTaken,
+            challengeMode: state.challengeMode,
+            achievements: achievementBadges,
+            operationStats: state.operationStats,
+            problems: state.problems.map((problem, index) => {
+              const answer = state.answers[index] || {};
+              return {
+                question: `${problem.num1} ${problem.operation} ${problem.num2} = ${problem.answer}`,
+                userAnswer: answer.userAnswer,
+                isCorrect: answer.isCorrect,
+                attempts: answer.attempts || 0
+              };
+            })
+          });
+        }
+        
+        // Calculate achievements
+        function calculateAchievements(percentage, timeTaken) {
+          const achievements = [];
+          
+          // Perfect score achievement
+          if (percentage === 100) {
+            achievements.push({
+              name: 'Perfect Score',
+              icon: '🏆',
+              description: 'Got all questions correct!'
+            });
+          }
+          
+          // Speed demon achievement (challenge mode only)
+          if (state.challengeMode && timeTaken < 30) {
+            achievements.push({
+              name: 'Speed Demon',
+              icon: '⚡',
+              description: 'Completed the quiz in record time!'
+            });
+          }
+          
+          // Operation master achievements
+          if (state.operationStats['+'].total > 0 && state.operationStats['+'].correct === state.operationStats['+'].total) {
+            achievements.push({
+              name: 'Addition Master',
+              icon: '+',
+              description: 'Got all addition questions correct!'
+            });
+          }
+          
+          if (state.operationStats['-'].total > 0 && state.operationStats['-'].correct === state.operationStats['-'].total) {
+            achievements.push({
+              name: 'Subtraction Master',
+              icon: '-',
+              description: 'Got all subtraction questions correct!'
+            });
+          }
+          
+          if (state.operationStats['×'].total > 0 && state.operationStats['×'].correct === state.operationStats['×'].total) {
+            achievements.push({
+              name: 'Multiplication Master',
+              icon: '×',
+              description: 'Got all multiplication questions correct!'
+            });
+          }
+          
+          return achievements;
+        }
+        
+        // Save quiz to user history (in-memory only)
+        function saveQuizToHistory(quizData) {
+          // Make sure we have the latest history
+          loadUserHistory();
+          
+          // Add quiz to history
+          userHistory.quizzes.unshift(quizData);
+          
+          // Only keep the latest 20 quizzes
+          if (userHistory.quizzes.length > 20) {
+            userHistory.quizzes = userHistory.quizzes.slice(0, 20);
+          }
+          
+          // Save to in-memory storage only (no localStorage)
+          globalQuizHistory.players[state.playerName] = userHistory;
+          
+          // Update history display
+          updateHistoryDisplay();
+        }
+        
+        // Load user history - using in-memory storage only
+        function loadUserHistory() {
+          const playerName = document.getElementById('player-name').value.trim() || 'Player';
+          
+          // Use in-memory storage only (no localStorage)
+          if (globalQuizHistory.players[playerName]) {
+            userHistory = globalQuizHistory.players[playerName];
+          } else {
+            // Initialize empty history
+            userHistory = { quizzes: [] };
+          }
+          
+          // Update history display
+          updateHistoryDisplay();
+        }
+        
+        // Update history display
+        function updateHistoryDisplay() {
+          const historyList = document.getElementById('history-list');
+          const playerName = document.getElementById('player-name').value.trim() || 'Player';
+          
+          // Get history from in-memory storage only
+          const history = globalQuizHistory.players[playerName] || { quizzes: [] };
+          
+          if (history.quizzes && history.quizzes.length > 0) {
+            historyList.innerHTML = '';
+            
+            // Display last 5 quizzes
+            history.quizzes.slice(0, 5).forEach((quiz, index) => {
+              const historyItem = document.createElement('div');
+              historyItem.className = 'history-item';
+              
+              const dateText = quiz.date ? (quiz.date.split(',')[0] || 'Unknown date') : 'Unknown date';
+              
+              historyItem.innerHTML = `
+                <div style="display: flex; justify-content: space-between;">
+                  <div><strong>Quiz ${index + 1}</strong></div>
+                  <div style="color: #666;">${dateText}</div>
+                </div>
+                <div style="margin-top: 5px;">
+                  <div>Score: ${quiz.score}/${quiz.total} (${quiz.percentage}%)</div>
+                  <div>Difficulty: ${quiz.difficulty}, Operation: ${quiz.operation}</div>
+                </div>
+              `;
+              
+              historyList.appendChild(historyItem);
+            });
+          } else {
+            historyList.innerHTML = '<div class="no-history" style="text-align: center; color: #666;">No quizzes completed yet</div>';
+          }
+        }
+        
+        // Return to main menu
+        function goToMainMenu() {
+          document.getElementById('results-screen').classList.remove('active');
+          document.getElementById('start-screen').classList.add('active');
+          updateHistoryDisplay();
+        }
+        
+        // Add event listeners
+        startButton.addEventListener('click', function() {
+          if (playerNameInput.value.trim() === '') {
+            // Highlight the name input to prompt user
+            playerNameInput.style.borderColor = 'red';
+            playerNameInput.classList.add('pulse');
+            
+            // Remove the highlight after animation completes
+            setTimeout(function() {
+              playerNameInput.style.borderColor = '#4169e1';
+              playerNameInput.classList.remove('pulse');
+            }, 1000);
+            
+            return;
+          }
+          
+          startQuiz();
+        });
+        
+        submitButton.addEventListener('click', submitAnswer);
+        
+        answerInput.addEventListener('keypress', function(event) {
+          if (event.key === 'Enter') {
+            submitAnswer();
+          }
+        });
+        
+        menuButton.addEventListener('click', goToMainMenu);
+        
+        retryButton.addEventListener('click', startQuiz);
+        
+        // Update player name input event listeners
+        document.getElementById('player-name').addEventListener('input', function() {
+          // Just load the user history when name changes
+          loadUserHistory();
+        });
+        
+      } catch(error) {
+        console.error('Error in math quiz:', error);
+        document.getElementById('error-message').textContent = 
+          'An error occurred: ' + error.message + '. Please refresh the page.';
+      }
+    };
+  </script>
+</body>
+</html>
